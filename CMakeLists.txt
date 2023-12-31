@@ -16,6 +16,7 @@ qt_add_qml_module(appADPlayer
     URI ADPlayer
     VERSION 1.0
     QML_FILES Main.qml
+    RESOURCES android/AndroidManifest.xml android/build.gradle android/gradle.properties
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -27,6 +28,7 @@ set_target_properties(appADPlayer PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+    QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
 )
 
 target_link_libraries(appADPlayer
