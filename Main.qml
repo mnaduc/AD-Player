@@ -64,6 +64,41 @@ Window {
         anchors.centerIn: parent
         anchors.margins: 20
         spacing: 30
+        focus: true
+        onActiveFocusChanged: forceActiveFocus()
+        Keys.onPressed: (event)=> {
+                            switch(event.key) {
+                                case Qt.Key_Left:
+                                player.position -= volumeSlider.value*1000
+                                break;
+                                case Qt.Key_Right:
+                                player.position += volumeSlider.value*1000
+                                break;
+                                case Qt.Key_Up:
+                                speedSlider.increase()
+                                break;
+                                case Qt.Key_Down:
+                                speedSlider.decrease()
+                                break;
+                                case Qt.Key_I:
+                                zoomInButton.clicked()
+                                break;
+                                case Qt.Key_O:
+                                zoomOutButton.clicked()
+                                break;
+                                case Qt.Key_Space:
+                                if(player.playing) {
+                                    player.pause()
+                                } else {
+                                    player.play()
+                                }
+                                break;
+                                case Qt.Key_R:
+                                player.position = repeatRangeSlider.first.value
+                                break;
+                            }
+                            event.accepted = true
+                        }
         ColumnLayout {
             id: buttonLayout
             Layout.preferredWidth: parent.width
@@ -284,6 +319,7 @@ Window {
                         text: msToTime(repeatRangeSlider.second.value)
                     }
                     Button {
+                        id: zoomOutButton
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.preferredWidth: 4
@@ -305,6 +341,7 @@ Window {
 
                     }
                     Button {
+                        id: zoomInButton
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.preferredWidth: 4
@@ -390,5 +427,66 @@ Window {
                 }
             }
         }
+    }
+
+    Rectangle {
+        id: popup
+        visible: false
+        height: 200
+        width: 400
+        radius: 20
+        border.color: "black"
+        anchors.centerIn: parent
+        Text {
+            anchors.fill: parent
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            text: "Created by: mnaduc@gmail.com\n\nSupported keys\nKey_R: Reset\nKey_Space: Play/Pause\n Key_Left/Right: Change progress position\nKey_Up/Down: Increase/decrease speed\nKey_I/O: zoom In/Out repeatRange"
+        }
+    }
+
+    MouseArea {
+        id: infoButton
+        height: 30
+        width: 30
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 10
+        hoverEnabled: true
+        Rectangle {
+            id: backgroundInfoButton
+            anchors.fill: parent
+            radius: 15
+            Text {
+                id: contentInfoButton
+                text: "!"
+                anchors.fill: parent
+                font.pixelSize: 20
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+    }
+
+    Item {
+        states: [
+            State {
+                name: "activeInfoPopup"
+                when: infoButton.containsMouse || infoButton.pressed
+                PropertyChanges {target: layout; opacity: 0.5}
+                PropertyChanges {target: backgroundInfoButton; border.color: "black"}
+                PropertyChanges {target: contentInfoButton; color: "black"}
+                PropertyChanges {target: popup; visible: true}
+            },
+            State {
+                name: "inactiveInfoPopup"
+                when: !(infoButton.containsMouse || infoButton.pressed)
+                PropertyChanges {target: layout; opacity: 1}
+                PropertyChanges {target: backgroundInfoButton; border.color: "grey"}
+                PropertyChanges {target: contentInfoButton; color: "grey"}
+                PropertyChanges {target: popup; visible: false}
+            }
+        ]
     }
 }
